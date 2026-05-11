@@ -1,8 +1,21 @@
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import User
-# Create your models here.
-#this Table will be about film project
+#create table(model) for a user
+class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('crew_member', 'Crew Member'),
+        ('producer', 'Producer'),
+        ('accountant', 'Accountant'),
+    ]
+    full_name = models.CharField(max_length=255)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='crew_member')
 
+    # Fix: ensure email is unique for login purposes
+    email = models.EmailField(unique=True)
+
+#this Table will be about film project
 class Project(models.Model):
     Project_Types = [('Movie','Feature Film'),('SHORT','Short Film'),('COMMERCIAL','Commercial'),('SERIES','TV Series')]
     STATUS = [('PRE','Pre_Production'), ('PRO','Production'), ('POST','Post-Production'),('DONE','Released')]
@@ -123,3 +136,34 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.item_description}: ${self.amount}"
+
+#create a department table
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+#create a film model(Table)
+class Film(models.Model):
+    STATUS_CHOICES = [
+        ('development', 'Development'),
+        ('pre_production', 'Pre-Production'),
+        ('production', 'Production'),
+        ('post_production', 'Post-Production'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    title = models.CharField(max_length=255)
+    genre = models.CharField(max_length=100, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='development')
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    # Track who created the film record
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.title
