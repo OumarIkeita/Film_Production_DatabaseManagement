@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
 from .models import (
-    Project, Location, Crew, Cast, Scene, 
+    Project, Location, Crew, Cast, Scene, FilmCrew,
     Equipment, ShootingDay, Expense, Department,
 )
 
@@ -41,6 +41,12 @@ class CrewSerializer(serializers.ModelSerializer):
         source='department', 
         required=False
     )
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(), 
+        source='project', 
+        required=False,
+        allow_null=True
+    )
     department_name = serializers.CharField(source='get_department_display', read_only=True)
     
     class Meta:
@@ -50,6 +56,7 @@ class CrewSerializer(serializers.ModelSerializer):
             'full_name', 
             'job_title', 
             'department_id', 
+            'project_id',
             'department_name', 
             'phone', 
             'hire_date', 
@@ -179,7 +186,7 @@ class ProjectCrewSerializer(serializers.ModelSerializer):
     role_on_film = serializers.ReadOnlyField(source='role') # Using 'role' for both per your model
 
     class Meta:
-        model = Crew
+        model = FilmCrew
         fields = ['assignment_id', 'crew_member_name', 'job_title', 'department_name', 'role_on_film']
 
 #Budget Summary Serializer
@@ -195,3 +202,25 @@ class ProjectBudgetSerializer(serializers.ModelSerializer):
         # Calculate sum of all expenses for this project
         total = Expense.objects.filter(project=obj).aggregate(Sum('amount'))['amount__sum']
         return total or 0
+
+#assign filmcrew
+class FilmCrewSerializer(serializers.ModelSerializer):
+    # Map frontend 'film_id' to backend 'project'
+    film_id = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all(), source='project'
+    )
+    # Map frontend 'crew_id' to backend 'crew'
+    crew_id = serializers.PrimaryKeyRelatedField(
+        queryset=Crew.objects.all(), source='crew'
+    )
+
+    class Meta:
+        model = FilmCrew
+        fields = ['film_id', 'crew_id', 'role_on_film']
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=FilmCrew.objects.all(),
+                fields=['film_id', 'crew_id'],
+                message="This crew member is already assigned to this film."
+            )
+        ]

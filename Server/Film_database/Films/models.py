@@ -63,7 +63,8 @@ class Location(models.Model):
 
 class Crew(models.Model):
     DEPTS = [('DIR','Directing'), ('CAMERA','camera'), ('ART','Art Dept'),('SOUND','Sound'),('GRIP','Grip/Electric')]
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="crew_members")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="crew_members",
+                                null=True, blank=True)
     name = models.CharField(max_length=255)
     department =models.CharField(max_length=10, choices=DEPTS)
     role = models.CharField(max_length=100)
@@ -165,3 +166,17 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
+
+#assign filmCrew models
+class FilmCrew(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="assignments")
+    crew = models.ForeignKey(Crew, on_delete=models.CASCADE, related_name="film_assignments")
+    role_on_film = models.CharField(max_length=100, blank=True, null=True)
+    assigned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Prevents assigning the same person to the same film twice
+        unique_together = ('project', 'crew') 
+
+    def __str__(self):
+        return f"{self.crew.name} on {self.project.title}"

@@ -11,10 +11,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import (
     UserSerializer, FilmSerializer, ProjectBudgetSerializer, 
     ProjectCrewSerializer, ProjectDetailSerializer, 
-    CrewSerializer, ExpenseSerializer
+    CrewSerializer, ExpenseSerializer,FilmCrewSerializer
 )
 from .models import (
-    Department, User, Project, Location, 
+    Department, User, Project, Location, FilmCrew,
     Crew, Cast, Scene, Equipment, ShootingDay, Expense
 )
 
@@ -164,7 +164,7 @@ def film_crud(request, pk): # Renamed to avoid naming conflict
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def film_crew_list(request, pk):
-    crew = Crew.objects.filter(project_id=pk)
+    crew = FilmCrew.objects.filter(project_id=pk)
     serializer = ProjectCrewSerializer(crew, many=True)
     return Response(serializer.data)
 
@@ -347,3 +347,18 @@ def stats_summary(request):
         "total_crew": total_crew,
         "total_expenses": total_expenses
     })
+
+# handleAssign  view 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assign_film_crew(request):
+    if not is_producer(request.user):
+        return Response({"detail": "Only producers can assign crew."}, status=403)
+        
+    serializer = FilmCrewSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    # This returns specific errors (e.g., "Crew member already assigned to this film")
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

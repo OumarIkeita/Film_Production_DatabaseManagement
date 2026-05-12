@@ -39,5 +39,8 @@ urlpatterns = [
     
     #dashboard url
     path('stats/summary/', views.stats_summary, name='stats-summary'),
+    
+    #assign urls
+    path('film-crew/', views.assign_film_crew, name='assign-film-crew'),
 
 ]
