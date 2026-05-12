@@ -18,17 +18,36 @@ class User(AbstractUser):
 #this Table will be about film project
 class Project(models.Model):
     Project_Types = [('Movie','Feature Film'),('SHORT','Short Film'),('COMMERCIAL','Commercial'),('SERIES','TV Series')]
-    STATUS = [('PRE','Pre_Production'), ('PRO','Production'), ('POST','Post-Production'),('DONE','Released')]
-    title = models.CharField(max_length=255)
-    project_type = models.CharField(max_length=10,choices=Project_Types)
-    status = models.CharField(max_length=10, choices=STATUS,default='PRE')
-    total_budget = models.DecimalField(max_digits=15, decimal_places=2)
-    production_compony = models.CharField(max_length=255)
+    STATUS = [
+        ('development', 'Development'),
+        ('pre_production', 'Pre-Production'),
+        ('production', 'Production'),
+        ('post_production', 'Post-Production'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
 
+    title = models.CharField(max_length=255)
+    # New fields needed by the frontend:
+    genre = models.CharField(max_length=100, blank=True, null=True) 
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    
+    project_type = models.CharField(max_length=10, choices=Project_Types)
+    status = models.CharField(max_length=20, choices=STATUS, default='development')
+    total_budget = models.DecimalField( max_digits=15, 
+        decimal_places=2, 
+        default=0,     
+        blank=True, 
+        null=True )
+    production_compony = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Track which user created this
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.title
-
 #LOCATION WHERE YOU SHOOT
 class Location(models.Model):
     name= models.CharField(max_length=255)
@@ -48,8 +67,10 @@ class Crew(models.Model):
     name = models.CharField(max_length=255)
     department =models.CharField(max_length=10, choices=DEPTS)
     role = models.CharField(max_length=100)
-    email = models.EmailField()
-    day_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    email = models.EmailField(null=True, blank=True)
+    day_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    hire_date = models.DateField(blank=True, null=True)
 
 
     def __str__(self):
@@ -127,7 +148,7 @@ class ShootingDay(models.Model):
 #FINANCE OR BUDGET TRACKING
 
 class Expense(models.Model):
-    project = models.ForeignKey(Project,on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="expenses")
     item_description = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     category = models.CharField(max_length=100)
@@ -144,26 +165,3 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-
-#create a film model(Table)
-class Film(models.Model):
-    STATUS_CHOICES = [
-        ('development', 'Development'),
-        ('pre_production', 'Pre-Production'),
-        ('production', 'Production'),
-        ('post_production', 'Post-Production'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-    ]
-
-    title = models.CharField(max_length=255)
-    genre = models.CharField(max_length=100, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='development')
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
-    description = models.TextField(blank=True, null=True)
-    # Track who created the film record
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return self.title
