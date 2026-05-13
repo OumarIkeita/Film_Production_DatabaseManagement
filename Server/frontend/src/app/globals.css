@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Bebas+Neue&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Raycast-inspired palette */
+    --background:    7 8 10;          /* #07080a — near-black blue-tint */
+    --foreground:    249 249 249;     /* #f9f9f9 — near-white */
+    --card:          16 17 17;        /* #101111 — surface 100 */
+    --card-foreground: 249 249 249;
+    --popover:       16 17 17;
+    --popover-foreground: 249 249 249;
+    --primary:       255 99 99;       /* #FF6363 — Raycast Red */
+    --primary-foreground: 249 249 249;
+    --secondary:     27 28 30;        /* #1b1c1e — card surface */
+    --secondary-foreground: 249 249 249;
+    --muted:         17 18 18;
+    --muted-foreground: 156 156 157;  /* #9c9c9d — medium gray */
+    --accent:        27 28 30;
+    --accent-foreground: 249 249 249;
+    --destructive:   255 99 99;
+    --border:        37 40 41;        /* hsl(195,5%,15%) ~ #252829 */
+    --input:         7 8 10;
+    --ring:          85 179 255;      /* #55b3ff — Raycast Blue */
+    --radius: 0.5rem;
+
+    /* Semantic accents */
+    --rc-red:   255 99 99;
+    --rc-blue:  85 179 255;
+    --rc-green: 95 201 146;
+    --rc-gold:  255 188 51;           /* kept for budget bar only */
+  }
+
+  * {
+    border-color: rgba(255, 255, 255, 0.06);
+    outline-color: rgb(var(--ring) / 0.4);
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'calt', 'kern', 'liga', 'ss03';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    min-height: 100vh;
+    letter-spacing: 0.2px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--background)); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+}
+
+/* ─── Display font (kept for existing .font-display uses) ──── */
+.font-display {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Raycast-style inset button shadows ──────────────────── */
+.rc-btn-primary {
+  background: rgba(255, 255, 255, 0.815);
+  color: #18191a;
+  border-radius: 86px;
+  box-shadow:
+    rgba(255, 255, 255, 0.1) 0px 1px 0px 0px inset,
+    rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset,
+    rgba(255, 255, 255, 0.25) 0px 0px 0px 1px;
+  transition: opacity 0.15s ease;
+}
+.rc-btn-primary:hover { opacity: 0.7; }
+
+.rc-btn-secondary {
+  background: transparent;
+  color: rgb(var(--foreground));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  box-shadow:
+    rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset,
+    rgba(0, 0, 0, 0.03) 0px 7px 3px;
+  transition: opacity 0.15s ease;
+}
+.rc-btn-secondary:hover { opacity: 0.6; }
+
+.rc-btn-ghost {
+  background: transparent;
+  color: #6a6b6c;
+  border: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+.rc-btn-ghost:hover { opacity: 0.6; color: rgb(var(--foreground)); }
+
+/* ─── Card / container styles ─────────────────────────────── */
+.rc-card {
+  background: rgb(var(--card));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  box-shadow:
+    rgb(27, 28, 30) 0px 0px 0px 1px,
+    rgb(7, 8, 10) 0px 0px 0px 1px inset;
+}
+
+/* ─── Input style ─────────────────────────────────────────── */
+.rc-input {
+  background: rgb(var(--background));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #f9f9f9;
+  font-size: 0.875rem;
+  padding: 0.625rem 0.75rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  letter-spacing: 0.2px;
+}
+.rc-input::placeholder { color: #6a6b6c; }
+.rc-input:focus {
+  border-color: hsla(202, 100%, 67%, 0.5);
+  box-shadow: 0 0 0 3px hsla(202, 100%, 67%, 0.12);
+}
+
+/* ─── Nav bar ─────────────────────────────────────────────── */
+.rc-nav {
+  background: rgb(var(--background));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+}
+
+/* ─── Fade-up entrance ───────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up   { animation: fadeUp 0.45s ease both; }
+.animate-fade-up-1 { animation: fadeUp 0.45s 0.04s ease both; }
+.animate-fade-up-2 { animation: fadeUp 0.45s 0.10s ease both; }
+.animate-fade-up-3 { animation: fadeUp 0.45s 0.16s ease both; }
+.animate-fade-up-4 { animation: fadeUp 0.45s 0.22s ease both; }
+.animate-fade-up-5 { animation: fadeUp 0.45s 0.28s ease both; }
+.animate-fade-up-6 { animation: fadeUp 0.45s 0.34s ease both; }
+
+/* ─── Table row hover ────────────────────────────────────── */
+.rc-row {
+  transition: background 0.12s ease;
+  border-left: 2px solid transparent;
+}
+.rc-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-left-color: rgba(255, 99, 99, 0.45);
+}
+
+/* keep old alias for existing JSX */
+.cinema-row { @apply rc-row; }
+
+/* ─── Status pill ────────────────────────────────────────── */
+.status-pill {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* ─── Stat card accent ───────────────────────────────────── */
+.stat-accent::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px 12px 0 0;
+}
+
+/* ─── Warm glow behind hero elements ─────────────────────── */
+.rc-glow {
+  box-shadow: rgba(215, 201, 175, 0.05) 0px 0px 20px 5px;
+}
+
+/* ─── Film grain overlay (very subtle) ───────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
