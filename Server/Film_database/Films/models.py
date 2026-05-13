@@ -111,10 +111,6 @@ class Scene(models.Model):
 
     def __str__(self):
         return f"Scene {self.scene_number}: {self.title}"
-    
-
-
-
 
 #equipment inventory table(tracking)
 
