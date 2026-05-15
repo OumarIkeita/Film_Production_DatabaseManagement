@@ -1,10 +1,10 @@
 from pathlib import Path
 from datetime import timedelta
 import os
-import dj_database_url
-from dotenv import load_dotenv
+#import dj_database_url
+#from dotenv import load_dotenv
 
-load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
+# load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,10 +78,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'postgres.kzjxkppyqomxeblagnpz',
         'PASSWORD': 'zFXh5RATv9pnVq1O',
-        'HOST': 'db.kzjxkppyqomxeblagnpz.supabase.co',
-        'PORT': '5432',
+        'HOST': 'aws-1-ap-southeast-2.pooler.supabase.com',
+        'PORT': '6543',
     }
 }
 
