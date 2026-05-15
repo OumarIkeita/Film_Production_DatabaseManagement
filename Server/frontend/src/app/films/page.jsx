@@ -34,6 +34,7 @@ const PROJECT_TYPE_OPTIONS = [
   { value: "COMMERCIAL", label: "Commercial" },
   { value: "SERIES", label: "TV Series" },
 ];
+
 const STATUS_OPTIONS = [
   "development",
   "pre_production",
@@ -86,6 +87,7 @@ export default function FilmsPage() {
       title: film.title,
       genre: film.genre || "",
       status: film.status,
+      project_type: film.project_type || "",
       start_date: film.start_date || "",
       end_date: film.end_date || "",
       description: film.description || "",
