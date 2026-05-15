@@ -328,18 +328,33 @@ def stats_queries(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def stats_summary(request):
-    # 1. Total Films
-    total_films = Project.objects.count()
+    user = request.user
 
-    # 2. In Production (Films with status set to 'production')
-    # Make sure 'production' matches the string in your STATUS choices
-    active_films = Project.objects.filter(status='production').count()
+    if is_producer(user):
+        # 1. Total Films produced by THIS user
+        user_projects = Project.objects.filter(created_by=user)
+        total_films = user_projects.count()
 
-    # 3. Total Crew Members
-    total_crew = Crew.objects.count()
+        # 2. Active Films produced by THIS user
+        active_films = user_projects.filter(status='production').count()
 
-    # 4. Total Expenses (Sum of all amounts in the Expense table)
-    total_expenses = Expense.objects.aggregate(Sum('amount'))['amount__sum'] or 0
+        # 3. Total Unique Crew working on THIS user's films
+        # FIXED: Changed 'filmcrew' to 'film_assignments' based on your error choices
+        total_crew = Crew.objects.filter(
+            film_assignments__project__created_by=user
+        ).distinct().count()
+
+        # 4. Total Expenses for THIS user's films
+        total_expenses = Expense.objects.filter(
+            project__created_by=user
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
+
+    else:
+        # Logic for Accountants or Admins: See everything
+        total_films = Project.objects.count()
+        active_films = Project.objects.filter(status='production').count()
+        total_crew = Crew.objects.count()
+        total_expenses = Expense.objects.aggregate(Sum('amount'))['amount__sum'] or 0
 
     return Response({
         "total_films": total_films,
@@ -347,7 +362,6 @@ def stats_summary(request):
         "total_crew": total_crew,
         "total_expenses": total_expenses
     })
-
 # handleAssign  view 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
