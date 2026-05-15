@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-# --- PROJECT /Film SERIALIZER ---
+# --- PROJECT / FILM SERIALIZER ---
 class FilmSerializer(serializers.ModelSerializer):
     film_id = serializers.ReadOnlyField(source='id')
     created_by = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -28,65 +28,54 @@ class FilmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = [
-            'film_id', 'title', 'genre', 'status',
-            'start_date', 'end_date', 'description', 'created_by', 'created_by_name'
+            'film_id', 'title', 'genre', 'status', 'project_type',
+            'start_date', 'end_date', 'description', 'total_budget',
+            'production_compony', 'created_by', 'created_by_name'
         ]
 
 
 # --- CREW SERIALIZER ---
 class CrewSerializer(serializers.ModelSerializer):
     crew_id = serializers.ReadOnlyField(source='id')
-    full_name = serializers.CharField(source='name', required=False) 
+    full_name = serializers.CharField(source='name', required=False)
     job_title = serializers.CharField(source='role', required=False)
-    department_id = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(), 
-        source='department', 
-        required=False
-    )
+    department = serializers.CharField(required=False)
     project_id = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), 
-        source='project', 
+        queryset=Project.objects.all(),
+        source='project',
         required=False,
         allow_null=True
     )
     department_name = serializers.CharField(source='get_department_display', read_only=True)
-    
+
     class Meta:
         model = Crew
         fields = [
-            'crew_id', 
-            'full_name', 
-            'job_title', 
-            'department_id', 
-            'project_id',
-            'department_name', 
-            'phone', 
-            'hire_date', 
-            'email', 
-            'day_rate'
+            'crew_id', 'full_name', 'job_title', 'department',
+            'project_id', 'department_name', 'phone', 'hire_date', 'email', 'day_rate'
         ]
 
-# --- FINANCE / EXPENSE SERIALIZER ---
+
+# --- EXPENSE SERIALIZER ---
 class ExpenseSerializer(serializers.ModelSerializer):
     film_title = serializers.ReadOnlyField(source='project.title')
-    recorded_by_name = serializers.ReadOnlyField(source='recorded_by.full_name')
-    # Rename project to film_id to match frontend form state
     film_id = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), 
+        queryset=Project.objects.all(),
         source='project'
     )
 
     class Meta:
         model = Expense
         fields = [
-            'id', 'film_id', 'film_title', 'category', 
-            'description', 'amount', 'expense_date', 'recorded_by_name'
+            'id', 'film_id', 'film_title', 'category',
+            'item_description', 'amount', 'date_spent'
         ]
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr['expense_id'] = repr.pop('id') # Changes 'id' to 'expense_id' for frontend
+        repr['expense_id'] = repr.pop('id')
         return repr
+
 
 # --- LOCATION SERIALIZER ---
 class LocationSerializer(serializers.ModelSerializer):
@@ -94,11 +83,13 @@ class LocationSerializer(serializers.ModelSerializer):
         model = Location
         fields = '__all__'
 
+
 # --- DEPARTMENT SERIALIZER ---
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
+
 
 # --- CAST SERIALIZER ---
 class CastSerializer(serializers.ModelSerializer):
@@ -107,6 +98,7 @@ class CastSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cast
         fields = '__all__'
+
 
 # --- SCENE SERIALIZER ---
 class SceneSerializer(serializers.ModelSerializer):
@@ -119,79 +111,52 @@ class SceneSerializer(serializers.ModelSerializer):
         model = Scene
         fields = '__all__'
 
+
 # --- EQUIPMENT SERIALIZER ---
 class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
         fields = '__all__'
 
+
 # --- SHOOTING DAY SERIALIZER ---
 class ShootingDaySerializer(serializers.ModelSerializer):
     project_title = serializers.ReadOnlyField(source='project.title')
-    # For M2M fields, we can return the list of scene IDs
     scene_details = SceneSerializer(source='scenes', many=True, read_only=True)
 
     class Meta:
         model = ShootingDay
         fields = ['id', 'project', 'project_title', 'date', 'call_time', 'sunrise', 'sunset', 'scenes', 'scene_details']
 
-# --- FINANCE / EXPENSE SERIALIZER ---
-class ExpenseSerializer(serializers.ModelSerializer):
-    film_title = serializers.ReadOnlyField(source='project.title')
-    recorded_by_name = serializers.ReadOnlyField(source='recorded_by.full_name')
-    # Rename project to film_id to match frontend form state
-    film_id = serializers.PrimaryKeyRelatedField(
-        queryset=Project.objects.all(), 
-        source='project'
-    )
 
-    class Meta:
-        model = Expense
-        fields = [
-            'id', 'film_id', 'film_title', 'category', 
-            'description', 'amount', 'expense_date', 'recorded_by_name'
-        ]
-
-    def to_representation(self, instance):
-        repr = super().to_representation(instance)
-        repr['expense_id'] = repr.pop('id') # Changes 'id' to 'expense_id' for frontend
-        return repr
-
-class ProjectCrewSerializer(serializers.ModelSerializer):
-    assignment_id = serializers.ReadOnlyField(source='id')
-    crew_member_name = serializers.ReadOnlyField(source='name')
-    department_name = serializers.CharField(source='get_department_display', read_only=True)
-
-    class Meta:
-        model = Crew
-        fields = ['assignment_id', 'crew_member_name', 'role', 'department_name']
-
-
-# --- FILM DETAIL PAGE SERIALIZERS ---
+# --- FILM DETAIL PAGE SERIALIZER ---
 class ProjectDetailSerializer(serializers.ModelSerializer):
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_name = serializers.ReadOnlyField(source='created_by.full_name')
     film_id = serializers.ReadOnlyField(source='id')
+
     class Meta:
         model = Project
         fields = [
-            'film_id', 'title', 'genre', 'status', 'start_date', 
-            'end_date', 'description', 'created_by_name'
+            'film_id', 'title', 'genre', 'status', 'project_type',
+            'start_date', 'end_date', 'description', 'total_budget',
+            'production_compony', 'created_by', 'created_by_name'
         ]
 
 
- #Film-specific Crew Serializer (inside a film_detail_page)
+# --- FILM-SPECIFIC CREW SERIALIZER (used inside film detail page) ---
 class ProjectCrewSerializer(serializers.ModelSerializer):
     assignment_id = serializers.ReadOnlyField(source='id')
-    crew_member_name = serializers.ReadOnlyField(source='name')
-    job_title = serializers.ReadOnlyField(source='role')
-    department_name = serializers.CharField(source='get_department_display', read_only=True)
-    role_on_film = serializers.ReadOnlyField(source='role') # Using 'role' for both per your model
+    crew_member_name = serializers.ReadOnlyField(source='crew.name')
+    job_title = serializers.ReadOnlyField(source='crew.role')
+    department_name = serializers.ReadOnlyField(source='crew.get_department_display')
 
     class Meta:
         model = FilmCrew
         fields = ['assignment_id', 'crew_member_name', 'job_title', 'department_name', 'role_on_film']
 
-#Budget Summary Serializer
+
+# --- BUDGET SUMMARY SERIALIZER ---
 class ProjectBudgetSerializer(serializers.ModelSerializer):
     total_amount = serializers.DecimalField(source='total_budget', max_digits=15, decimal_places=2)
     total_spent = serializers.SerializerMethodField()
@@ -201,17 +166,15 @@ class ProjectBudgetSerializer(serializers.ModelSerializer):
         fields = ['total_amount', 'total_spent']
 
     def get_total_spent(self, obj):
-        # Calculate sum of all expenses for this project
         total = Expense.objects.filter(project=obj).aggregate(Sum('amount'))['amount__sum']
         return total or 0
 
-#assign filmcrew
+
+# --- ASSIGN FILM CREW SERIALIZER ---
 class FilmCrewSerializer(serializers.ModelSerializer):
-    # Map frontend 'film_id' to backend 'project'
     film_id = serializers.PrimaryKeyRelatedField(
         queryset=Project.objects.all(), source='project'
     )
-    # Map frontend 'crew_id' to backend 'crew'
     crew_id = serializers.PrimaryKeyRelatedField(
         queryset=Crew.objects.all(), source='crew'
     )

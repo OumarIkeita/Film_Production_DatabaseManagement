@@ -20,12 +20,20 @@ const EMPTY_FORM = {
   title: "",
   genre: "",
   status: "development",
+  project_type: "",
   start_date: "",
   end_date: "",
   description: "",
   total_budget: 0,
   production_compony: "",
 };
+
+const PROJECT_TYPE_OPTIONS = [
+  { value: "Movie", label: "Feature Film" },
+  { value: "SHORT", label: "Short Film" },
+  { value: "COMMERCIAL", label: "Commercial" },
+  { value: "SERIES", label: "TV Series" },
+];
 const STATUS_OPTIONS = [
   "development",
   "pre_production",
@@ -246,6 +254,41 @@ export default function FilmsPage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label style={labelStyle}>Project Type *</label>
+              <Select
+                value={form.project_type}
+                onValueChange={(v) => setForm({ ...form, project_type: v })}
+              >
+                <SelectTrigger className="rc-input h-10 text-sm">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent
+                  style={{
+                    background: "rgb(16,17,17)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  {PROJECT_TYPE_OPTIONS.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label style={labelStyle}>Production Company</label>
+              <input
+                className="rc-input"
+                placeholder="e.g. Warner Bros."
+                value={form.production_compony}
+                onChange={(e) => setForm({ ...form, production_compony: e.target.value })}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">

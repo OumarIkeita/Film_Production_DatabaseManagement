@@ -80,7 +80,7 @@ def crew_detail(request, pk):
 @permission_classes([IsAuthenticated])
 def expense_list(request):
     if request.method == 'GET':
-        expenses = Expense.objects.all().order_by('-expense_date')
+        expenses = Expense.objects.all().order_by('-date_spent')
         serializer = ExpenseSerializer(expenses, many=True)
         return Response(serializer.data)
     
@@ -89,7 +89,7 @@ def expense_list(request):
             return Response({"detail": "Only accountants can record expenses."}, status=403)
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(recorded_by=request.user) # Fixed: used request.user, not request.data
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
