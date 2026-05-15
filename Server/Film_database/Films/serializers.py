@@ -22,13 +22,14 @@ class UserSerializer(serializers.ModelSerializer):
 # --- PROJECT /Film SERIALIZER ---
 class FilmSerializer(serializers.ModelSerializer):
     film_id = serializers.ReadOnlyField(source='id')
+    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_name = serializers.ReadOnlyField(source='created_by.full_name')
 
     class Meta:
-        model = Project # Use Project consistently
+        model = Project
         fields = [
-            'film_id', 'title', 'genre', 'status', 
-            'start_date', 'end_date', 'description', 'created_by_name'
+            'film_id', 'title', 'genre', 'status',
+            'start_date', 'end_date', 'description', 'created_by', 'created_by_name'
         ]
 
 

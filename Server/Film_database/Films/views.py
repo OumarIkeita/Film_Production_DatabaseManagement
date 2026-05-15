@@ -130,7 +130,7 @@ def film_list_create(request):
             return Response({"detail": "Only producers can add films."}, status=403)
         serializer = FilmSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save() 
+            serializer.save(created_by=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
