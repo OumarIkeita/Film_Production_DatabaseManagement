@@ -35,8 +35,8 @@ function QueryCard({ title, description, columns, data, loading, index }) {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgb(16,17,17)' }}>
                 {columns.map(c => (
                   <th key={c} className="px-5 py-2.5 text-left whitespace-nowrap font-medium"
                     style={{ color: '#6a6b6c', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
@@ -45,21 +45,30 @@ function QueryCard({ title, description, columns, data, loading, index }) {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {data.map((row, i) => (
-                <tr key={i} className="rc-row" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  {Object.values(row).map((val, j) => (
-                    <td key={j} className="px-5 py-3 whitespace-nowrap" style={{ color: 'rgba(249,249,249,0.75)' }}>
-                      {typeof val === 'number' || (typeof val === 'string' && val.match(/^\$?[\d,]+(\.\d+)?$/))
-                        ? <span style={{ color: '#f9f9f9', fontWeight: 500 }}>{val ?? '—'}</span>
-                        : (val ?? '—')
-                      }
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
           </table>
+          <div style={{ maxHeight: '520px', overflowY: 'auto' }}>
+            <table className="w-full text-xs">
+              <tbody>
+                {data.map((row, i) => (
+                  <tr key={i} className="rc-row" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    {Object.values(row).map((val, j) => (
+                      <td key={j} className="px-5 py-3 whitespace-nowrap" style={{ color: 'rgba(249,249,249,0.75)' }}>
+                        {typeof val === 'number' || (typeof val === 'string' && val.match(/^\$?[\d,]+(\.\d+)?$/))
+                          ? <span style={{ color: '#f9f9f9', fontWeight: 500 }}>{val ?? '—'}</span>
+                          : (val ?? '—')
+                        }
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {data.length > 20 && (
+            <div className="px-5 py-2 text-xs" style={{ color: '#6a6b6c', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              Showing all {data.length} results — scroll to view more
+            </div>
+          )}
         </div>
       )}
     </div>

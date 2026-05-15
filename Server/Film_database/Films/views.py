@@ -268,7 +268,7 @@ def stats_queries(request):
     # Ranked by how many projects they are assigned to
     active_crew_qs = Crew.objects.values('name', 'role', 'department').annotate(
         film_count=Count('project')
-    ).order_by('-film_count')[:10]
+    ).order_by('-film_count')[:20]
 
     active_crew = [{
         "Name": c['name'],
@@ -317,10 +317,10 @@ def stats_queries(request):
 
     return Response({
         "budget_summary": budget_summary,
-        "over_budget": [b for b in budget_summary if float(b["Spent"].replace('$','').replace(',','')) > float(b["Budget"].replace('$','').replace(',',''))],
-        "active_crew": [], 
-        "department_workload": [], 
-        "uncrewed_films": [], 
+        "over_budget": over_budget,
+        "active_crew": active_crew,
+        "department_workload": department_workload,
+        "uncrewed_films": uncrewed_films,
         "expense_breakdown": expense_breakdown
     })
 
