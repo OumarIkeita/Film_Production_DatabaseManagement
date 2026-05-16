@@ -8,7 +8,7 @@
 |------|-----------|----------------------|
 | Ahmad | *(your ID)* | Developed the full-stack application: React/Next.js frontend (UI pages, routing, auth context, API integration), Django REST API backend, JWT authentication, database connection and deployment |
 | Oumar Ikeita | *(Oumar's ID)* | Developed ERD design, DDL schema, DML seed data, and SQL queries (procedures, functions, triggers) |
-| *(Member 3)* | *(ID)* | *(contribution)* |
+| Ayoub Amekzaz | 22304616 | Developed ERD design, DDL schema, DML seed data, and SQL queries (procedures, functions, triggers) |
 
 > **Note:** Only one member has submitted this report on behalf of the group.
 
